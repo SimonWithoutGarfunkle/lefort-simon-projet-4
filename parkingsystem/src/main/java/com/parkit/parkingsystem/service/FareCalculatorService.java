@@ -5,7 +5,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
     /** coucou
-    * test
+    * test test encore
     */
 
     public void calculateFare(Ticket ticket){
