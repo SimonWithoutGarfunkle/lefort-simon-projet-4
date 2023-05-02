@@ -86,4 +86,11 @@ public class TicketDAO {
         }
         return false;
     }
+
+        public int getNbTicket(Ticket ticket) {
+    	int nbTicket =0;
+    	//counting function required here
+    	return nbTicket;
+    		
+    }
 }

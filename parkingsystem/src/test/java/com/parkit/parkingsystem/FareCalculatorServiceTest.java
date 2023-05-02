@@ -8,6 +8,7 @@ import com.parkit.parkingsystem.service.FareCalculatorService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,11 +32,13 @@ public class FareCalculatorServiceTest {
     @Test
     public void calculateFareCar(){
         Date inTime = new Date();
-        inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );
+        inTime.setTime(System.currentTimeMillis() - (  60 * 60 * 1000) );
+        ticket.setInTime(inTime);
+
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
 
-        ticket.setInTime(inTime);
+
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
@@ -56,6 +59,7 @@ public class FareCalculatorServiceTest {
         assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
     }
 
+
     @Test
     public void calculateFareUnkownType(){
         Date inTime = new Date();
@@ -68,6 +72,7 @@ public class FareCalculatorServiceTest {
         ticket.setParkingSpot(parkingSpot);
         assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
+
 
     @Test
     public void calculateFareBikeWithFutureInTime(){
@@ -122,6 +127,70 @@ public class FareCalculatorServiceTest {
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
+    }
+
+    @Test
+    public void calculateFareBikeWithLessThan30minutesParkingTime(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  25 * 60 * 1000) );//Get in 25min before (less than 30min)
+        Date outTime = new Date();
+        outTime.setTime(System.currentTimeMillis());
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals(0, ticket.getPrice() );
+    }
+    
+    @Test
+    public void calculateFareCarWithLessThan30minutesParkingTime(){
+    	Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  25 * 60 * 1000) );//Get in 25min before (less than 30min)
+        Date outTime = new Date();
+        outTime.setTime(System.currentTimeMillis());
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals( 0, ticket.getPrice());
+    }
+
+    @Test
+    public void calculateFareCarWithDiscount () {
+    	Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  90 * 60 * 1000) );//Get in 90min before
+        Date outTime = new Date();
+        outTime.setTime(System.currentTimeMillis());
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, true);
+        
+        assertEquals( 0.95*(1.5*1.5), ticket.getPrice());
+    	 	  	
+    }
+    
+    @Test
+    public void calculateFareBikeWithDiscount () {
+    	Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  90 * 60 * 1000) );//Get in 90min before
+        Date outTime = new Date();
+        outTime.setTime(System.currentTimeMillis());
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket, true);
+        
+        assertEquals( 0.95*(1*1.5), ticket.getPrice());
+    	 	  	
     }
 
 }
