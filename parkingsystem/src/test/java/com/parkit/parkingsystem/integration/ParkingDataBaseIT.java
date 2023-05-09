@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -22,6 +23,9 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Date;
+
+
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
@@ -85,41 +89,57 @@ public class ParkingDataBaseIT {
 
     
     @Test
+    @Timeout(30)
     public void testParkingLotExit(){
         //Arrange
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        Ticket testTicket = new Ticket();
+        long now;
 
         //Act
         parkingService.processExitingVehicle();
+        testTicket = ticketDAO.getTicket("ABCDEF");
 
         //Assert
         //TODO: check that the fare generated and out time are populated correctly in the database
-
+        assertEquals(0, testTicket.getPrice());
+        now = System.currentTimeMillis();
+        assertTrue(now - testTicket.getOutTime().getTime()<30000);
 
     }
-    
-    
 
-    /*
     @Test
     public void testParkingLotExitRecurringUser() {
         //Arrange
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        double priceFirstPassage;
-        double priceSecondPassage;
+        Ticket testTicketFirstPassage = new Ticket();
+        Ticket testTicketSecondPassage = new Ticket();
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - ( 8 * 60 * 60 * 1000) ); //First 30min are free so we need to change inTime
 
         //Act
+        //First Passage
         parkingService.processIncomingVehicle();
-        priceFirstPassage = parkingService.processExitingVehicle();
+        testTicketFirstPassage = ticketDAO.getTicket("ABCDEF");
+        testTicketFirstPassage.setInTime(inTime);
+        ticketDAO.updateTicketInTime(testTicketFirstPassage);
+        parkingService.processExitingVehicle();
+        testTicketFirstPassage = ticketDAO.getTicket("ABCDEF");
+       
+        //Second Passage
         parkingService.processIncomingVehicle();
-        priceSecondPassage = parkingService.processExitingVehicle();
+        testTicketSecondPassage = ticketDAO.getTicket("ABCDEF");
+        testTicketSecondPassage.setInTime(inTime);
+        ticketDAO.updateTicketInTime(testTicketSecondPassage);
+        parkingService.processExitingVehicle();
+        testTicketSecondPassage = ticketDAO.getTicket("ABCDEF");
 
         //Assert
-        assertTrue(priceSecondPassage == (0.95 * priceFirstPassage));
+        assertEquals(testTicketSecondPassage.getPrice(), Math.round(0.95 * testTicketFirstPassage.getPrice()*100.00)/100.00);
+
 	
     }
-    */
-    
+        
 
 }

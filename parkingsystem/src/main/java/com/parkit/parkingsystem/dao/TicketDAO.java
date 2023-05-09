@@ -88,7 +88,7 @@ public class TicketDAO {
     }
 
         
-        public int getNbTicket(Ticket ticket) {
+    public int getNbTicket(Ticket ticket) {
     	int nbTicket =0;
         String regNumber = ticket.getVehicleRegNumber();
         Connection con = null;
@@ -115,6 +115,24 @@ public class TicketDAO {
 
     	return nbTicket;
     		
+    }
+
+    public boolean updateTicketInTime(Ticket ticket) {
+        Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET_INTIME);
+            Timestamp timestamp = new Timestamp(ticket.getInTime().getTime());
+            ps.setTimestamp(1, timestamp);
+            ps.setInt(2,ticket.getId());
+            ps.execute();
+            return true;
+        }catch (Exception ex){
+            logger.error("Error saving ticket info inTime",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return false;
     }
     
 

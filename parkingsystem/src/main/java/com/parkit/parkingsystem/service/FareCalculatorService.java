@@ -24,11 +24,11 @@ public class FareCalculatorService {
 		if (duration > 0.5) {
 			switch (ticket.getParkingSpot().getParkingType()) {
 				case CAR: {
-					ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
+					ticket.setPrice(Math.round(duration * Fare.CAR_RATE_PER_HOUR *100.00)/100.00);
 					break;
 				}
 				case BIKE: {
-					ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
+					ticket.setPrice(Math.round(duration * Fare.BIKE_RATE_PER_HOUR *100.00)/100.00);
 					break;
 				}
 				default:
@@ -40,9 +40,9 @@ public class FareCalculatorService {
 
 		}
 		if (discount) {
-			ticket.setPrice(0.95*ticket.getPrice());
+			ticket.setPrice(Math.round((0.95*ticket.getPrice())*100.00)/100.00);
 		}
-		
+	
 	
 	}
 }
