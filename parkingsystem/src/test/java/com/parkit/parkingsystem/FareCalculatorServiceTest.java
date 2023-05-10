@@ -189,7 +189,7 @@ public class FareCalculatorServiceTest {
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket, true);
         
-        assertEquals(Math.round(0.95*1.00*1.50*100.00)/100.00, ticket.getPrice());
+        assertEquals(Math.round(0.95 * 1.00 * 1.50 * 100.00) /100.00, ticket.getPrice());
     	 	  	
     }
 

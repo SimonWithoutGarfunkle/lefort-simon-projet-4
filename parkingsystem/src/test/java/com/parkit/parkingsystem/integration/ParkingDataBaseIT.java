@@ -60,21 +60,22 @@ public class ParkingDataBaseIT {
     }
 
     
+    
     @Test
     public void testParkingACar(){
         //Arrange
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        Ticket testTicket = new Ticket();
-        testTicket.setVehicleRegNumber("ABCDEF");
-        int nbTicketBeforeIncoming = ticketDAO.getNbTicket(testTicket);
+        Ticket testTicketParkingACar = new Ticket();
+        testTicketParkingACar.setVehicleRegNumber("ABCDEF");
+        int nbTicketBeforeIncoming = ticketDAO.getNbTicket(testTicketParkingACar);
         int nbTicketAfterIncoming;
         Ticket testAvailabilityTicket = new Ticket();
 
         //Act
         parkingService.processIncomingVehicle();
-        nbTicketAfterIncoming = ticketDAO.getNbTicket(testTicket);
+        nbTicketAfterIncoming = ticketDAO.getNbTicket(testTicketParkingACar);
         testAvailabilityTicket = ticketDAO.getTicket("ABCDEF");
 
         //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability       
@@ -86,6 +87,7 @@ public class ParkingDataBaseIT {
    
     }
     
+    
 
     
     @Test
@@ -93,19 +95,21 @@ public class ParkingDataBaseIT {
     public void testParkingLotExit(){
         //Arrange
         testParkingACar();
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Ticket testTicket = new Ticket();
+        Ticket testTicketParkingLotExit = ticketDAO.getTicket("ABCDEF");
         long now;
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         //Act
+        testTicketParkingLotExit.setInTime(new Date(System.currentTimeMillis() - ( 60 * 60 * 1000)));
+        ticketDAO.updateTicketInTime(testTicketParkingLotExit);
         parkingService.processExitingVehicle();
-        testTicket = ticketDAO.getTicket("ABCDEF");
+        testTicketParkingLotExit = ticketDAO.getTicket("ABCDEF");
 
         //Assert
         //TODO: check that the fare generated and out time are populated correctly in the database
-        assertEquals(0, testTicket.getPrice());
+        assertEquals(1.50, testTicketParkingLotExit.getPrice());
         now = System.currentTimeMillis();
-        assertTrue(now - testTicket.getOutTime().getTime()<30000);
+        assertTrue(now - testTicketParkingLotExit.getOutTime().getTime()<30000);
 
     }
 

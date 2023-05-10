@@ -104,7 +104,6 @@ public class ParkingService {
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
             Date outTime = new Date();
             ticket.setOutTime(outTime);
-
             boolean discount = false;
             if (ticketDAO.getNbTicket(ticket)>1) {
                 discount = true;

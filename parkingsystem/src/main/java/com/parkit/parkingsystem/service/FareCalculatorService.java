@@ -36,7 +36,7 @@ public class FareCalculatorService {
 				}
 
 		} else {
-			ticket.setPrice(0);
+			ticket.setPrice(0.00);
 
 		}
 		if (discount) {
