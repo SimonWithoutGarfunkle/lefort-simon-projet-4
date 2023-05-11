@@ -97,22 +97,17 @@ public class TicketDAO {
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_NB_TICKET);
             ps.setString(1, regNumber);
             ResultSet rs = ps.executeQuery();
-
             while(rs.next()){
                nbTicket++; 
-            }
-            
+            }            
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
-
-            return nbTicket;
-            
+            return nbTicket;            
         }catch (Exception ex){
             logger.error("Error saving ticket info",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
         }
-
     	return nbTicket;
     		
     }
